@@ -27,3 +27,9 @@ pip install -r requirements.txt
 После успешного завершения установки вводим
 py app.py или python3 app.py (Если на linux)
 `
+
+```
+Дожидаемся строки
+Dash is running on http://localhost:8050/
+и переходим по ссылке http://localhost:8050/
+```
