@@ -6,3 +6,4 @@ numpy~=1.26.2
 pandas~=2.1.3
 requests~=2.31.0
 scipy~=1.11.4
+moexalgo~=1.0.1
