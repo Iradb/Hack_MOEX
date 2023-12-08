@@ -12,6 +12,11 @@
 Если на Linux вводим в консоль python3 -m venv lenv
 `
 
+`
+После вводим на Windows lenv\Script\activate
+`
+После вводим на Linux source lenv/bin/activate
+
 ```
 Устанавливаем библиотеки и зависимости
 
