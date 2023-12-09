@@ -51,20 +51,7 @@ html,body{
     width: 50px;
     height: 50px;
 }
-.list_none{
-    position: absolute;
-    display: flex;
-    align-items: center;
-    background-color: #F9CA9E;
-    border: solid #f8bb82;
-    border-radius: 5px;
-    box-shadow: 1px 2px 2px 1px rgba(0, 0, 0, .2);;
-    overflow-y: scroll;
-    width: 32.5%;
-    margin-top: 4em;
-    height: 20%;
-    z-index: 1;
-}
+
 
 .buttons_list_none{
     width: 135px;
@@ -184,11 +171,84 @@ height: 60px;
 }
 
 /* ================================================================================ */
+.Main_Color{
+    color: black;
+    text-align: center;
+    justify-content: center;
+}
+.LOGO{
+    color: black;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+    align-items: center;
+    width: 100%;
+}
+.list_none{
+    position: absolute;
+    display: flex;
+    align-items: center;
+    background-color: #D0E6FB;
+    border-radius: 5px;
+    box-shadow: 1px 2px 2px 1px rgba(0, 0, 0, .2);;
+    overflow-y: scroll;
+    width: 32.5%;
+    margin-top: 4em;
+    height: 20%;
+    z-index: 1;
+}
+
+#head_desc{
+    font-size: 20px;
+    text-align: center;
+    background-color: #ffffff;
+}
+#sector_desc{
+    font-size: 20px;
+    text-align: center;
+    background-color: #ffffff;
+
+}
+#desc{
+    font-size: 20px;
+    text-align: center;
+    background-color: #ffffff;
+
+}
 .Take_ticket{
     width: 80%;
     height: auto;
     margin: auto;
     margin-top: 1%;
+}
+.Sorted{
+    width: 30%;
+    height: auto;
+    float: left;
+}
+.Information_stocks{
+    float: right;
+    font-size: 20px;
+    width: 100%;
+    background-color: #f7f9fc;
+    text-align: center;
+    border-radius: 5px;
+    border: none;
+    box-shadow: 2px 4px 2px 1px rgba(0, 0, 0, .1);;
+}
+.Sorted .Select-value{
+    text-align: center;
+    align-items: center;
+}
+.button_and_list{
+    width: 25%;
+    height: auto;
+    float: right;
+}
+.Head_doxod{
+    width: 70%;
+    /* display: flex; */
+    margin: auto;
 }
 .DropDown_stocks{
     width: 35%;
@@ -213,22 +273,77 @@ height: 60px;
     align-items: center;
     justify-content: center;
     margin: 0 auto;
+    
 }
-.First_Graph{
+.left_side{
     width: 49%;
     height: auto;
     float: left;
 }
-.Second_Graph{
+.First_Graph{
+    width: 100%;
+    height: auto;
+}
+.addon_left_side{
+    width: 75%;
+    display: grid;
+    align-items: center;
+    margin: 0 auto;
+    height: 75px;
+    background-color: #D0E6FB;
+    box-shadow: 2px 4px 2px 1px rgba(0, 0, 0, .2);
+}
+.addon_left_side p{
+    margin: 0 auto;
+    text-align: center;
+}
+.right_side{
     width: 49%;
     height: auto;
     float: left
+}
+.Second_Graph{
+    width: 100%;
+    height: auto;
+}
+
+.left_side_div{
+    width: 75%;
+    font-size: 20px;
+    margin: 0 auto;
+    height: 75%;
+    text-align: center;
+    background-color: rgb(249, 250, 252);
+    border-radius: 5px;
+    box-shadow: 2px 4px 2px 1px rgba(0, 0, 0, .2);
+}
+.left_side_div p {
+    margin: 0 auto;
+}
+
+.addon_right_side{
+    width: 75%;
+    margin: 0 auto;
+    height: 75px;
+    background-color: #D0E6FB;
+    box-shadow: 2px 4px 2px 1px rgba(0, 0, 0, .2);
 }
 .Rec_system{
     width: 80%;
     margin: 0 auto;
     display: flex;
     justify-content: center;
+}
+.Right_side_div{
+    display: flex;
+}
+.Right_side_div p{
+    width: 45%;
+    text-align: center;
+    background-color: rgb(249, 250, 252);
+    border-radius: 5px;
+    box-shadow: 2px 4px 2px 1px rgba(0, 0, 0, .2);
+    font-size: 20px;
 }
 .Pos_button{
     position: sticky;

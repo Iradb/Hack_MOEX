@@ -38,14 +38,15 @@ scheduler.init_app(app)
 scheduler.start()
 
 data = Data()
-data.load_data()
-data.take_uniq_val("secid")
+# data.load_data()
+# data.take_uniq_val("secid")
 
 ML_d = ML()
 ML_d.predict()
-ML_d.show("ZVEZ")
 
 
+# options=[{"label":"Обзор","value":"Obzor"},{"label":"Свечной анализ","value":"Svecha"},{"label":"Биржевой стакан","value":"Stakan"}
+# {"label":"Прогноз. Доходности","value":"Predict"},{"label":"Точности прогноза","value":"Predict"}
 @app.server.route('/css/<path:path>')
 def static_file(path):
     static_folder = os.path.join(os.getcwd(), 'css')
@@ -55,15 +56,15 @@ app.layout = html.Div([
                 html.Header([
                     html.Div([
                         dcc.Location(id='url',refresh=False),
-                        html.Link(rel="stylesheet",href="/css/main.css")
-                    ],className="Main_Color"),
+                        html.Link(rel="stylesheet",href="/css/main.css"),
+                    ],className="Main_Color"),html.H1(["OneHotDay"],className="LOGO")
                 ],className="header"),
                 html.Div([html.Div(
-                    [dcc.Dropdown(options=[{"label":value,"value":key} for key,value in data.dict_name.items()]
-                                  ,searchable=True,placeholder="Выберите или введите акцию....",className="DropDown_stocks",id="DropDown",value="SBER"),
+                    [html.Div([dcc.Dropdown(options=[{"label":"Прогноз. Доходности","value":"Benefits"},{"label":"Точности прогноза","value":"MAPE"}],optionHeight=50,clearable=False,placeholder="Сортировка по ......",className="Sorted",id="sorted_val"),dcc.Dropdown(options=[{"label":key[1],"value":key[0]} for key in ML_d.PD_sorted[['tickers','name']].values]
+                                  ,searchable=True,placeholder="Выберите или введите акцию....",className="DropDown_stocks",id="DropDown",value="SBER"),html.Div([html.Button(["Информация о акции"],className="Information_stocks",id="button_inform"),html.Div([html.P([],id="head_desc"),html.P([],id="sector_desc"),html.P([],id="desc")],className="list_none",id="id_list_none")],className="button_and_list")],className="Head_doxod"),
                 html.Div([html.H1("",id="Name_stocks")],className="TicketName")],className="Take_ticket"),
                 html.Div([
-                    html.Div([dcc.Dropdown(options=[{"label":"Обзор","value":"Obzor"},{"label":"Свечной анализ","value":"Svecha"},{"label":"Биржевой стакан","value":"Stakan"}],className="Side_drop_down_1",value="Obzor",id='Obzor',optionHeight=50,clearable=False)],className="Left_sidebar"),
+                    html.Div([dcc.Dropdown(options=[{"label":"Обзор","value":"Obzor"},{"label":"Свечной анализ","value":"Svecha"}],className="Side_drop_down_1",value="Obzor",id='Obzor',optionHeight=50,clearable=False)],className="Left_sidebar"),
                     html.Div([dcc.Graph(id="Graphic_obzor_r",className="Graphic_obzor")],className="Central_Graphic"),
                     html.Div([dash_table.DataTable(id="Right_table",style_table={'height': '400px', 'overflowY': 'auto'},style_data={'backgroundColor': '#fff7ef',
                                                                                                                                      "font-size":"20px"} 
@@ -71,7 +72,7 @@ app.layout = html.Div([
                     
                 ],className="panel_body"),
                 html.Div([html.H1(["Рекомендательная система"])],className="Rec_system"),
-                html.Div([dcc.Graph(className="First_Graph",id="One_graph"),dcc.Graph(className="Second_Graph",id="Second_graph")],className="Content_body")
+                html.Div([html.Div([dcc.Graph(className="First_Graph",id="One_graph"),html.Div([html.Div([html.P(["Метрика ошибки нейросетевого прогноза"])],className="left_side_div"),html.Div([html.P(["Какая-либо инфа"],id="left_loss")],className="left_side_div")],className="addon_left_side")],className="left_side"),html.Div([dcc.Graph(className="Second_Graph",id="Second_graph"),html.Div([html.Div([html.P(["Максимальная цена"],id="Max_val"),html.P(["Максимальная цена"],id="Min_val")],className="Right_side_div"),html.Div([html.P(["Какая-либо инфа"],id="benifits_doxod")],className="left_side_div")],className="addon_left_side")],className="right_side")],className="Content_body")
 ]),html.Button(["Оставить заявку"],className="Pos_button"),])
 
 

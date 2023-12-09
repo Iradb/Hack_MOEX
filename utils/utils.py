@@ -3,6 +3,7 @@ import datetime
 from catboost import CatBoostRegressor, Pool
 import time
 from moexalgo import Market, Ticker
+from sklearn.metrics import mean_absolute_percentage_error
 
 class Data():
     def __init__(self):
@@ -11,6 +12,7 @@ class Data():
         self.dict_name = {}
     def load_data(self):
         self.data = pd.read_csv("Data/tradestats.csv")
+        self.data_ticket = pd.read_csv("Data/tickers.csv",sep=',')
         self.data_rate = pd.read_csv("Data/rates.csv",encoding='cp1251',sep=';',header=1)
     def load_data_columns(self,columns_pd,column):
         return self.data[self.data[f"{columns_pd}"]==column]
@@ -22,16 +24,16 @@ class Data():
     def load_data_from_url(self,ticker,date,type):
         tradestats = pd.DataFrame()
         back_date = datetime.datetime.now()- datetime.timedelta(days=3)
-        now_date = datetime.datetime.now()
+        now_date = datetime.datetime.now().date()
         # url = f'https://iss.moex.com/iss/datashop/algopack/eq/orderstats/{ticker}.csv?from={back_date.date()}&till={now_date.date()}&iss.only=data'
         # df = pd.read_csv(url, sep=';', skiprows=2)
         # df.to_csv(f"Save_stakan {ticker}.csv",sep=';')
         stock = Ticker(ticker)
         if type in ["Svecha","Obzor"]:
-            tradestats = stock.tradestats(date=back_date.date())
+            tradestats = stock.tradestats(date=str(now_date))
             tradestats = pd.DataFrame(tradestats)
         elif type in ["Stakan"]:
-            tradestats = stock.orderstats(date=str(back_date.date()))
+            tradestats = stock.orderstats(date=str(now_date))
             tradestats = pd.DataFrame(tradestats)
             # tradestats['pr_change'] = tradestats['pr_change'].astype(float)
             # tradestats.to_csv(f"Save_stakan {ticker}.csv",sep=';')
@@ -56,6 +58,8 @@ class ML():
        'pr_change', 'val_b', 'val_s', 'disb', 'Normpr_vwap', 'Normpr_vwap_b', 'Normpr_vwap_s',
         'dayofweek', 'quarter', 'month', 'year', 'dayofyear',
        'dayofmonth', 'weekofyear', 'hour', 'minute']
+        self.data_rate = pd.read_csv("Data/rates.csv",encoding='cp1251',sep=';',header=1)
+        self.data_ticket = pd.read_csv("Data/tickers.csv",sep=',')
     def prepare(self):
         date = datetime.datetime.now().date()
         print(date-datetime.timedelta(days=2))
@@ -143,9 +147,28 @@ class ML():
         y_prog=self.model.predict(val_all)
         self.val['PrognozNew']=y_prog
         self.val['PrognozNewAbs']=val['PrognozNew']*(val['pr_close_Max']-val['pr_close_Min'])+val['pr_close_Min']
+        self.update_sort_val()
+        # self.val["Percent_benefits"] = ((self.val['PrognozValAbs'].max()/self.val['PrognozValAbs'].min())-1)*100
     def show(self,Ticker):
         val_tik=self.val.loc[self.val['ticker']==Ticker]
-        return val_tik
+        loss_data_val = mean_absolute_percentage_error(val_tik['pr_close'],val_tik['PrognozValAbs'])
+        max_min_val = val_tik["PrognozNewAbs"].max(),val_tik["PrognozNewAbs"].min()
+        sum_benefit = ((val_tik['PrognozNewAbs'].max()/val_tik['PrognozNewAbs'].min())-1)*100
+        return val_tik,loss_data_val,round(max_min_val[0],2),round(max_min_val[1],2),round(sum_benefit,2)
+    
+    def update_sort_val(self):
+        self.PD_sorted = pd.DataFrame(columns=["tickers","name","mape","benefits"])
+        for Tickers in self.val['ticker'].unique():
+            val = self.val[self.val['ticker']==Tickers]
+            mape_v = mean_absolute_percentage_error(self.val[self.val['ticker']==Tickers]["PrognozValAbs"],self.val[self.val['ticker']==Tickers]["pr_close"])
+            name = self.data_rate[self.data_rate["SECID"] == Tickers]["NAME"].values[0]
+            benefits = ((val['PrognozNewAbs'].max()/val['PrognozNewAbs'].min())-1)*100
+            pd_add = pd.DataFrame([{"tickers":Tickers,"name":name,"mape":mape_v,"benefits":benefits}])
+            self.PD_sorted = pd.concat([self.PD_sorted,pd_add])
+            # self.dict_name.update({Tickers:name,"mape":mape_v,"benefits":benefits})
+            
+        #  ((x["PrognozValAbs"].max()/x["PrognozValAbs"].min())-1)*100
+
         
 
 
