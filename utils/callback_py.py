@@ -62,7 +62,7 @@ def get_callback(app,data,ML_d):
         Output('desc', 'children'),
         Input('button_inform', 'n_clicks'),
         State('DropDown','value'))
-    def call_display_stocks(n_clicks,value):
+    def call_display_stocks(n_clicks,value): # Функция вывода информации о тикете по нажатию на кнопку
         if n_clicks is not None and n_clicks % 2 == 1:
             data_sec = ML_d.data_ticket[ML_d.data_ticket["ticker"]==value]
             return [{"display":"block"},str(f"Индетификатор : {value}"),str(f"Сектор : {data_sec['sector'].values[0]}",),str(f"{data_sec['short_desc'].values[0]}",)]
@@ -71,7 +71,7 @@ def get_callback(app,data,ML_d):
 
     @app.callback(Output("DropDown","options"),
                   Input("sorted_val","value"))
-    def sorted_dropdown(value):
+    def sorted_dropdown(value): # Функция сортировки тикетов
         print(value)
         if value != None:
             if value == "Benefits":
@@ -85,13 +85,13 @@ def get_callback(app,data,ML_d):
             options=[{"label":str(key[1]),"value":key[0]} for key in ML_d.PD_sorted[['tickers','name']].values]
             return options
 
-    @app.callback(Output("Graphic_obzor_r","figure"),
+    @app.callback(Output("Graphic_obzor_r","figure"), 
                   Output("Right_table","columns"),
                   Output("Right_table","data"),
                   Output("Right_table","style_data_conditional"),
                   Input("Obzor","value"),
                   Input("DropDown","value"),)
-    def change_drop_down(*value):
+    def change_drop_down(*value): # Функция вывода информации на графики по выбору значений из выпадающего списка
         print(value)
         if value[1] != None:
             data_back = data.load_data_from_url(value[1],1,value[0])
@@ -170,7 +170,7 @@ def get_callback(app,data,ML_d):
             return [{'data': [], 'layout': {'font':{'color': color, 'size': size}}},[{"name":" ","id":"1"}],[{}],[{}]]
 
 
-    def table_value_red_green(data,columns):
+    def table_value_red_green(data,columns): # Функция окраски данных в таблице, на красный,если ниже 0 или на зеленый,если выше
         style_data_conditional = []
         for row in data[columns]:
             if row > 0:
@@ -187,7 +187,7 @@ def get_callback(app,data,ML_d):
                   Output("Min_val",'children'),
                   Output("benifits_doxod",'children'),
                   Input("DropDown","value"))
-    def something_new_do(value):
+    def something_new_do(value): # Вывод данных по рекомендательной системы на графиках
         if value is not None:
             ticket = ML_d.PD_sorted[ML_d.PD_sorted["tickers"]==value]['name']
             data_ML,loss,Max_val,Min_val,benefits_doxod = ML_d.show(value)

@@ -5,7 +5,7 @@ import time
 from moexalgo import Market, Ticker
 from sklearn.metrics import mean_absolute_percentage_error
 
-class Data():
+class Data(): # Создаем класс для подгрузки данных с API MOEX
     def __init__(self):
         self.data = pd.DataFrame()
         self.data_rate = pd.DataFrame()
@@ -21,13 +21,10 @@ class Data():
         for i in data_ret:
             self.dict_name[i] = self.data_rate[self.data_rate["SECID"] == i]["NAME"].values[0]
         return 
-    def load_data_from_url(self,ticker,date,type):
+    def load_data_from_url(self,ticker,date,type): # Функция для вывода данных на центральный график, Обзор или Свечной анализ
         tradestats = pd.DataFrame()
         back_date = datetime.datetime.now()- datetime.timedelta(days=3)
         now_date = datetime.datetime.now().date()
-        # url = f'https://iss.moex.com/iss/datashop/algopack/eq/orderstats/{ticker}.csv?from={back_date.date()}&till={now_date.date()}&iss.only=data'
-        # df = pd.read_csv(url, sep=';', skiprows=2)
-        # df.to_csv(f"Save_stakan {ticker}.csv",sep=';')
         stock = Ticker(ticker)
         if type in ["Svecha","Obzor"]:
             tradestats = stock.tradestats(date=str(now_date))
@@ -35,21 +32,17 @@ class Data():
         elif type in ["Stakan"]:
             tradestats = stock.orderstats(date=str(now_date))
             tradestats = pd.DataFrame(tradestats)
-            # tradestats['pr_change'] = tradestats['pr_change'].astype(float)
-            # tradestats.to_csv(f"Save_stakan {ticker}.csv",sep=';')
         tradestats["ts"] = pd.to_datetime(tradestats["ts"])
         tradestats.rename(columns={"ts":"tradedate"},inplace=True)
         tradestats["tradetime"] = [str(i).split(" ")[1] for i in tradestats["tradedate"]]
         tradestats = tradestats.sort_values(by=["tradetime"],ascending=False)
         return tradestats
-        # tradestats = pd.concat([tradestats, df])
-        # tradestats["tradedate"] = pd.to_datetime(tradestats["tradedate"]+" "+tradestats["tradetime"])
        
     
-class ML():
+class ML(): # Класс для ML модели с преподготовкой данных и предсказанием
     def __init__(self) -> None:
-        self.model = CatBoostRegressor()
-        self.model.load_model('assets/catboost_model_timesplit.bin')
+        self.model = CatBoostRegressor() # Инициализируем модель
+        self.model.load_model('assets/catboost_model_timesplit.bin') # подгружаем модель
         self.max_min = pd.read_csv('assets/tickets_maxmin.csv',sep=';', index_col=None)
         self.stocks = Market('stocks')
         self.columns_to_train=[  'ticker',  'vol', 'trades',
@@ -60,7 +53,7 @@ class ML():
        'dayofmonth', 'weekofyear', 'hour', 'minute']
         self.data_rate = pd.read_csv("Data/rates.csv",encoding='cp1251',sep=';',header=1)
         self.data_ticket = pd.read_csv("Data/tickers.csv",sep=',')
-    def prepare(self):
+    def prepare(self): # Преподготовка данных
         date = datetime.datetime.now().date()
         print(date-datetime.timedelta(days=2))
         test=self.stocks.tradestats(date=str(date-datetime.timedelta(days=3)))
@@ -102,13 +95,8 @@ class ML():
         return test,val
 
     def prepare_date(self,test,val):
-        # test['tradedate']=test['tradedate'].astype(str)
-        # test['tradetime']=test['tradetime'].astype(str)
-        # test['TimeValue'] = pd.to_datetime(test['tradedate'] + ' ' + test['tradetime'])
+
         test['TimeValue'] = pd.to_datetime(test['TimeValue'])
-        # val['tradedate']=val['tradedate'].astype(str)
-        # val['tradetime']=val['tradetime'].astype(str)
-        # val['TimeValue'] = pd.to_datetime(val['tradedate'] + ' ' + val['tradetime'])
         val['TimeValue'] = pd.to_datetime(val['TimeValue'])
 
                 # создание полей времени
@@ -133,7 +121,7 @@ class ML():
         val['minute'] = val['TimeValue'].dt.minute
 
         return test,val
-    def predict(self):
+    def predict(self): # Предсказание модели, данные будем хранить в памяти 
         test,val,test_all = self.prepare()
         y_pred = self.model.predict(test)
         test_all["PrognozVal"]=y_pred
@@ -148,15 +136,14 @@ class ML():
         self.val['PrognozNew']=y_prog
         self.val['PrognozNewAbs']=val['PrognozNew']*(val['pr_close_Max']-val['pr_close_Min'])+val['pr_close_Min']
         self.update_sort_val()
-        # self.val["Percent_benefits"] = ((self.val['PrognozValAbs'].max()/self.val['PrognozValAbs'].min())-1)*100
-    def show(self,Ticker):
+    def show(self,Ticker): # Вывод данных на графики рекомендателой системы
         val_tik=self.val.loc[self.val['ticker']==Ticker]
         loss_data_val = mean_absolute_percentage_error(val_tik['pr_close'],val_tik['PrognozValAbs'])
         max_min_val = val_tik["PrognozNewAbs"].max(),val_tik["PrognozNewAbs"].min()
         sum_benefit = ((val_tik['PrognozNewAbs'].max()/val_tik['PrognozNewAbs'].min())-1)*100
         return val_tik,loss_data_val,round(max_min_val[0],2),round(max_min_val[1],2),round(sum_benefit,2)
     
-    def update_sort_val(self):
+    def update_sort_val(self): # Функция подгрузки наименования тикетов
         self.PD_sorted = pd.DataFrame(columns=["tickers","name","mape","benefits"])
         for Tickers in self.val['ticker'].unique():
             val = self.val[self.val['ticker']==Tickers]
@@ -165,10 +152,6 @@ class ML():
             benefits = ((val['PrognozNewAbs'].max()/val['PrognozNewAbs'].min())-1)*100
             pd_add = pd.DataFrame([{"tickers":Tickers,"name":name,"mape":mape_v,"benefits":benefits}])
             self.PD_sorted = pd.concat([self.PD_sorted,pd_add])
-            # self.dict_name.update({Tickers:name,"mape":mape_v,"benefits":benefits})
-            
-        #  ((x["PrognozValAbs"].max()/x["PrognozValAbs"].min())-1)*100
-
         
 
 

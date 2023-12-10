@@ -1,5 +1,5 @@
-"# Hack_MOEX"
-1-e 
+<h1 style="text-align:center">OneHotDay</h1>
+
 **Скачиваем проект с гитхаба**
 ```
 Переходим в папку с проектом
@@ -13,7 +13,7 @@
 `
 
 `
-После вводим на Windows lenv\Script\activate
+После вводим на Windows lenv\Scripts\activate
 `
 После вводим на Linux source lenv/bin/activate
 
@@ -25,7 +25,7 @@ pip install -r requirements.txt
 ```
 `
 После успешного завершения установки вводим
-py app.py или python3 app.py (Если на linux)
+py app.py (Windows) или python3 app.py (Если на linux)
 `
 
 ```
